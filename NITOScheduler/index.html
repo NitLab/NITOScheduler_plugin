@@ -1,0 +1,110 @@
+﻿<!doctype html>
+
+<!--
+#
+# Copyright (c) 2012 NITLab, University of Thessaly, CERTH, Greece
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in
+# all copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+# THE SOFTWARE.
+#
+#
+# This is a MySlice plugin for the NITOS Scheduler
+# NITOScheduler v0.8
+#
+-->
+
+
+<html lang="en">
+<head>
+    <title>Nitos Scheduler Demo</title>    
+    <link rel="Stylesheet" type="text/css" href="css/reservation.css" media="screen" />  
+    <link rel="Stylesheet" type="text/css" href="javascript/datepicker/css/jquery.datepick.css" media="screen" />
+    <link rel="Stylesheet" type="text/css" href="javascript/tabber/example.css" media="screen" /> 
+	
+	<script type="text/javascript">
+
+        /* Optional: Temporarily hide the "tabber" class so it does not "flash"
+        on the page as plain HTML. After tabber runs, the class is changed
+        to "tabberlive" and it will appear. */
+
+        document.write('<style type="text/css">.tabber{display:none;}<\/style>');
+    </script>
+</head>
+
+<body>
+     <div id="nitos_scheduler">
+        <div id="image">
+            <h2 style="font-family:Book Antiqua; color:Blue;"> Nitos Topology</h2>
+            <img src="icons/nitos_topo.png" alt="nitos topology" />
+        </div>
+        <div id="date_block">
+            <h2 style="float:left; margin-right:10px; font-family:Book Antiqua; color:Blue;""> Choose your time slot:</h2>
+            <input type="text" style="float:left; margin-left:0; margin-top:24px; margin-right:10px; cursor: pointer; * cursor: hand; width:100px;" readonly="true" id="datepick" value="" />
+        </div>
+        <input type="text" hidden="hidden" id="hidden_date" />
+        <div class="tabber">
+            <div class="tabbertab">
+                <h2>Grid</h2>
+                <div  id="place"></div>  
+                <div id="buttons_div">
+                    <input type="button" id="reserveBtn" value="Reserve" />
+                    <input type="button" id="clearBtn" value="Clear" /> 
+                    <ul id="seatDescription">
+                        <li style="background:url('icons/circle_grey.png') no-repeat scroll 0 0 transparent; background-position:bottom;">Available</li>
+                        <li style="background:url('icons/circle_red.png') no-repeat scroll 0 0 transparent; background-position:bottom;">Not Available</li>
+                        <li style="background:url('icons/circle_blue.png') no-repeat scroll 0 0 transparent; background-position:bottom;">Selected</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="tabbertab">
+                <h2>Orbit</h2>
+                <div  id="place_orbit"></div>  
+                <div id="buttons_div_orbit">
+                    <input type="button" id="reserveBtn_orbit" value="Reserve"/>
+                    <input type="button" id="clearBtn_orbit" value="Clear"/>  
+                    <ul id="seatDescription_orbit">
+                        <li style="background:url('icons/circle_grey.png') no-repeat scroll 0 0 transparent; background-position:bottom;">Available</li>
+                        <li style="background:url('icons/circle_red.png') no-repeat scroll 0 0 transparent; background-position:bottom;">Not Available</li>
+                        <li style="background:url('icons/circle_blue.png') no-repeat scroll 0 0 transparent; background-position:bottom;">Selected</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="tabbertab">
+                <h2>Diskless</h2>
+                <div  id="place_diskless"></div>  
+                <div id="buttons_div_diskless">
+                    <input type="button" id="reserveBtn_diskless" value="Reserve"/>
+                    <input type="button" id="clearBtn_diskless" value="Clear"/> 
+                    <ul id="seatDescription_diskless">
+                        <li style="background:url('icons/circle_grey.png') no-repeat scroll 0 0 transparent; background-position:bottom;">Available</li>
+                        <li style="background:url('icons/circle_red.png') no-repeat scroll 0 0 transparent; background-position:bottom;">Not Available</li>
+                        <li style="background:url('icons/circle_blue.png') no-repeat scroll 0 0 transparent; background-position:bottom;">Selected</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+	<script type="text/javascript" src="javascript/kernel/jquery_1_8_1.js"></script>
+	<script type="text/javascript" src="javascript/datepicker/js/jquery.datepick.js"></script>
+    <script type="text/javascript" src="javascript/tabber/tabber.js"></script>
+	<script type="text/javascript" src="javascript/scheduler/reservation.jquery.js"></script>
+	<script type="text/javascript" src="javascript/reserve_controls.js"></script>
+    
+</body>
+</html>

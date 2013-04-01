@@ -1,0 +1,246 @@
+/*
+#
+# Copyright (c) 2012 NITLab, University of Thessaly, CERTH, Greece
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in
+# all copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+# THE SOFTWARE.
+#
+#
+# This is a MySlice plugin for the NITOS Scheduler
+# NITOScheduler v8
+#
+*/
+
+﻿body
+{
+     
+}
+
+/*******************************************************/
+/*The main div that contains my scheduler*/
+#nitos_scheduler 
+{
+    display:inline-block;
+    white-space:nowrap;
+    width:800px;
+    padding: 0;
+    margin: 0;
+
+    /*border: 2px solid red;*/
+
+}
+
+#date_block 
+{
+    display:block;
+    float:right;
+    width:400px;
+    margin-top:-15px;
+    padding-left:5px;
+
+    /*border:2px solid green;*/
+}
+
+/*ioi styles that override default tabber ones*/
+.tabberlive 
+{
+    margin-right:0px !important;
+    
+    /*border: 2px solid black;*/
+}
+
+.tabberlive .tabbertab 
+{
+    padding-right:0px !important;
+}
+
+/*ioi : datepicker*/
+.ui-datepicker-trigger{
+    cursor:pointer;
+    *cursor:hand;
+    margin-top:2px;
+}
+
+/***********************************************************/
+
+#place_commel,
+#place_orbit,
+#place_diskless  
+{
+    position:relative;
+    display:block;
+    float:right;
+    width:440px;
+    height:200px;
+    overflow:scroll;
+    background-color:#F5F5F5;
+    border:1px solid #A4A4A4;
+    margin:7px 0 7px 0;
+    padding:10px 0 10px 0;
+}
+
+#place_commel ul,
+#place_orbit ul,
+#place_diskless ul
+{
+    /*display:inline-block;*/
+    white-space:nowrap; /*use this to get x-scroll*/
+    margin:3px;
+    padding:1px; 
+}
+
+#place_commel ul li a,
+#place_orbit ul li a,
+#place_diskless ul li a
+{
+    font-size:0.6em;
+    font-weight:normal; 
+    vertical-align:text-top; 
+}
+
+#place_commel ul a,
+#place_orbit ul a,
+#place_diskless ul a
+{
+    font-size:0.9em;
+    font-weight:bold;
+    vertical-align:bottom;
+    margin-right:3px;
+}
+
+#place_commel ul li,
+#place_orbit ul li,
+#place_diskless ul li
+{
+    display: inline-block;
+    list-style-type: none;
+    margin-left:10px !important;
+    height:20px;
+}    
+
+#place_commel .slot,
+#place_orbit .slot,
+#place_diskless .slot
+{
+    background:url("../icons/circle_grey.png") no-repeat;
+    background-position:bottom;  
+}
+
+#place_commel .slot:hover,
+#place_orbit .slot:hover,
+#place_diskless .slot:hover
+{
+    background:url("../icons/circle_yellow.png") no-repeat !important;
+    background-position:bottom !important;
+    cursor: pointer;
+    * cursor: hand;
+}
+
+#place_commel .selectedSlot,
+#place_orbit .selectedSlot,
+#place_diskless .selectedSlot
+{ 
+    background-image:url("../icons/circle_red.png");
+    background-position:bottom;          
+}
+
+#place_commel .selectingSlot,
+#place_orbit .selectingSlot,
+#place_diskless .selectingSlot
+{ 
+    background-image:url("../icons/circle_blue.png");
+    background-position:bottom;
+}
+
+
+#seatDescription_commel li,
+#seatDescription_orbit li,
+#seatDescription_diskless li
+{  
+    list-style-type: none;
+    display:inline-block;
+    margin-left:25px !important;
+    height:30px;
+    float:right;
+
+}
+
+
+#buttons_div_commel,
+#buttons_div_orbit,
+#buttons_div_diskless
+{
+    position:relative;
+    float:right;
+    width:415px;
+    margin: 0 10px 0 0;
+    
+    /*border: 2px solid yellow;*/
+}
+
+#reserveBtn_commel,
+#reserveBtn_orbit,
+#reserveBtn_diskless
+{
+    float:left;
+    margin-top:20px;
+    margin-right:10px;
+        
+}
+
+
+#reserveBtn_commel:hover,
+#reserveBtn_orbit:hover,
+#reserveBtn_diskless:hover
+{
+	cursor: pointer;
+	* cursor: hand;
+}
+
+#clearBtn_commel,
+#clearBtn_orbit,
+#clearBtn_diskless
+{
+    float:left;    
+    margin-top:20px;
+}
+
+
+#clearBtn_commel:hover,
+#clearBtn_orbit:hover,
+#clearBtn_diskless:hover
+{
+	cursor: pointer;
+	* cursor: hand;
+}
+
+
+#image
+{
+    display:block;
+    position:relative;
+    width:350px;
+    margin:0;
+    padding:0;
+    float:left;   
+
+
+    /*border:2px solid blue;*/
+}
+
+
