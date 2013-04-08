@@ -1,0 +1,28 @@
+/* 
+    Document   : ResourcesSelected
+    Created on : 9 août 2012, 11:54:41
+    Author     : loicbaron
+    Description:
+        Purpose of the stylesheet follows.
+*/
+
+tr.add td{ 
+    background-color: #E3F6CE;
+}
+tr.remove td{ 
+    background-color: #F6CECE;
+}
+.ResourceSelectedClose{
+    cursor: pointer;
+}
+
+input.myslice_action {
+   font-size:13px;
+   font-family:Arial,sans-serif;
+   font-weight:bold;
+   color:#0066CC;
+   width:100px;
+   height:30px;
+   background-color:#FF9933;
+}
+
