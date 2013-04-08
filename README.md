@@ -10,11 +10,19 @@ So put this line of code at the file /usr/share/myslice/joomla/components/com_to
 'testbed' => "omf"
 
 The code in order to see NITOS resources is :
+
 // *************************************
+
 $nitos = Plugins::get('NITOScheduler');
+
 $nitos->set_params(Array(
+
 	'query_uuid' => $q_rsrc->uuid,
+
 	'testbed' => "omf"
+
 ));
+
 $tab->add("NITOScheduler",$nitos);
+
 // *************************************
