@@ -53,7 +53,8 @@ if ( typeof Object.create !== 'function' ) {
 			subgroup_nodes: [],
 			reserved_nodes: [5, 20, 13, 6],
 			subtestbed_id: "none",
-		        parent: null
+		        parent: null,
+			resources: []
 		    };
 		 
 	         return settings; 
@@ -88,7 +89,7 @@ if ( typeof Object.create !== 'function' ) {
 
 			for (i = 0; i < numofnodes; i++) {
 			    str.push('<ul class="node"><a title="' + my_nodes[i].component_id + '">' +  my_nodes[i].hostname + '</a>');
-                k = 0;
+			    k = 0;
 			    for (j = 0; j < settings.cols; j++) {
 			        // Create the time labels
 			        (j % 2) ? k++ : k;
@@ -146,7 +147,9 @@ if ( typeof Object.create !== 'function' ) {
 
 					// Remove the selected item from the resources selected
 					// Use combination of grep and map
-					tmp = $.grep(settings.parent.current_resources, function(x) { return x.node != entry.node || x.timeslot != entry.timeslot; });
+					//tmp = $.grep(settings.parent.current_resources, function(x) { return x.node != entry.node || x.timeslot != entry.timeslot; });
+					
+					tmp = $.grep(settings.resources, function(x) { return x.node != entry.node || x.timeslot != entry.timeslot; });
 
 					tmp_ = $.map(tmp, function(x) { return { node : x.node, timeslot : x.timeslot }; });
 
@@ -157,9 +160,11 @@ if ( typeof Object.create !== 'function' ) {
 
 					// List of objects after removing the data that i do not want
 					jQuery.fn.ResourcesArray = tmp_g;
-		    			settings.parent.current_resources = tmp_;
+					settings.resources = tmp_;
+		    			//settings.parent.current_resources = tmp_;
+					 
 					/* inform slice that our selected resources have changed */
-					$.publish('/update-set/' + settings.parent.options.query_uuid, [settings.parent.current_resources, true]);
+					$.publish('/update-set/' + settings.parent.options.query_uuid, [settings.resources, true]);
 
 				     } else {
 					 // Add table entry
@@ -178,10 +183,14 @@ if ( typeof Object.create !== 'function' ) {
 					 gentry.timeslot = time_slot;
 					 gentry.date = date;
 					 
+					 // modify the plugins array, used several dates memory
 					 jQuery.fn.ResourcesArray.push(gentry);
-					 settings.parent.current_resources.push(entry);
+					 //settings.parent.current_resources.push(entry);
+					 // modify the shared resources array
+					 settings.resources.push(entry);
+					 
 					 /* inform slice that our selected resources have changed */
-					 $.publish('/update-set/' + settings.parent.options.query_uuid, [settings.parent.current_resources, true]);
+					 $.publish('/update-set/' + settings.parent.options.query_uuid, [settings.resources, true]);
 
 				     }// else
 				 } // if: Reserved slot
@@ -296,6 +305,19 @@ if ( typeof Object.create !== 'function' ) {
         this.current_query = null;
 	this.current_resources = new Array(); // hold the resources selected
         var object = this;
+
+
+	///////////////////////////////////////////////////////////
+	// Create the object tha will make the tab visualization //
+	// This object has all the functionalities of the plugin //
+	///////////////////////////////////////////////////////////
+
+	var reserve = Object.create( Reservation );
+	// Reservation object initialize					
+	var reservation_settings = reserve.init();
+	reservation_settings.parent = object;
+
+
         /* methods */
 	this.get_leases = function(rows, options){
 		function node_info(duration, timeslot, year, month, day, time, type, resource){
@@ -347,11 +369,12 @@ if ( typeof Object.create !== 'function' ) {
 		//console.log(node_info_list);
 	}
 
-
-	this.update_resources = function(e, resources, instances){
-  	     console.log(e);
-	     console.log(resources);
- 	     console.log(instances);
+	// Each time a new update publish event is called this function is excecuted
+	// Take the updated resource list and put a reference to the settings
+	this.update_resources = function(resources, instances){
+	    
+	  var pre_resources = reservation_settings.resources;
+	  reservation_settings.resources = resources;
 	};
 
 	// Get Resources
@@ -367,21 +390,18 @@ if ( typeof Object.create !== 'function' ) {
 			}
 		}
 
-		// Create the object tha will make the tab visualization
-		var reserve = Object.create( Reservation );
-		// Reservation object initialize					
-		var reservation_settings = reserve.init();
-		reservation_settings.parent = object;
-		
-		////// CREATE THE TABS  /////////////////		
+		// TODO: Replace the tabs with your own
+		// set the nodes id ( the name should be the same as in the  )
+		////// CREATE THE TABS  /////////////////
+		// First tab
 		reservation_settings.subtestbed_id = "commel";
 		reserve.subgroup(nodes, reservation_settings);
 		reserve.display(reservation_settings);
-
+		// Second tab
 		reservation_settings.subtestbed_id = "orbit";
 		reserve.subgroup(nodes, reservation_settings);
 		reserve.display(reservation_settings);
-
+		// Third tab
 		reservation_settings.subtestbed_id = "diskless";
 		reserve.subgroup(nodes, reservation_settings);
 		reserve.display(reservation_settings);
@@ -412,13 +432,13 @@ if ( typeof Object.create !== 'function' ) {
 			// to get all the resources from mySlice API
 			var QUERY_RESOURCES   = '/query/' + self.options.query_uuid + '/changed';
 			var RESULTS_RESOURCES = '/results/' + self.options.query_uuid + '/changed';
-		        var UPDATE_RESOURCES = '/update-set/' + self.options.query_uuid + '/changed';
+		        var UPDATE_RESOURCES = '/update-set/' + self.options.query_uuid;
 			var RESULTS_LEASES    = '/results/' + self.options.lease_query_uuid + '/changed';
 
 			$.subscribe(RESULTS_RESOURCES, function(e, rows) { s.get_resources(rows, self.options); });			
 			$.subscribe(RESULTS_RESOURCES, function(e, resources) { /*s.set_resources(resources);*/   });
 		        $.subscribe(RESULTS_LEASES,    function(e, leases)    { s.get_leases(leases, self.options);});
-		        $.subscribe(UPDATE_RESOURCES,  function(e, resources, instance) { s.update_resources(e,resources,instance); });
+		        $.subscribe(UPDATE_RESOURCES,  function(e, resources, instance) { s.update_resources(resources,instance); });
 
 			///////////////////////////////////
 	

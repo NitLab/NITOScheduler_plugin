@@ -10,10 +10,6 @@
  */
 
 /*
- UTH contributed in order to make it compatible with NITOScheduler plugin
-*/
-
-/*
  * It's a best practice to pass jQuery to an IIFE (Immediately Invoked Function
  * Expression) that maps it to the dollar sign so it can't be overwritten by
  * another library in the scope of its execution.
@@ -141,19 +137,20 @@
 
             /* Update the table with resources in the slice */
             var slivers = $.grep(resources, function(i) {return typeof(i['sliver']) != 'undefined';})
-
             var sliver_urns = Array();
-            $.each(slivers, function(i, x) { sliver_urns.push(x.urn); }); 
+            // ioi : refubrished
+	    $.each(slivers, function(i, x) { sliver_urns.push({node:x.urn, timeslot:"0"}); }); // ioi
 
-            this.initial_resources = sliver_urns.slice(0); // We make a copy of the object
-
+            this.initial_resources = sliver_urns[0]; // We make a copy of the object // ioi
+	    // ioi
+	    
             if (this.current_resources == null) {
                 this.current_resources = sliver_urns;
 
                 /* We simply add to the ResourceSelected table */
                 var newlines=Array();
                 $.each(sliver_urns, function(index, urn) {
-                    newlines.push(Array('attached', urn, " ", " ")); // ioi: added last element
+                    newlines.push(Array('attached', urn.node, urn.timeslot, " ")); // ioi: added last element
                 });
                 this.table.dataTable().fnAddData(newlines);
             } else {
@@ -163,9 +160,9 @@
 
         this.update_resources = function(resources, change) 
         {
-            var my_oTable = this.table.dataTable();
-            var prev_resources = this.current_resources;
-    
+	    
+          var my_oTable = this.table.dataTable();
+          var prev_resources = this.current_resources; 
             /*      \ this.initial_resources
              *           \
              * this.          \
@@ -180,57 +177,59 @@
              * component will learn nodes in the slice through the manifest
              * received through the other subscription 
              */
-            if (!change)
-                return;
+          if (!change)
+              return;
 
+	  // ioi: Refubrished
+          var initial = this.initial_resources;
+          var r_removed  = []; //$.grep(initial,   function (x) { return $.inArray(x.node, resources.node) == -1 });
+	  exists = false; // ioi
+	  $(resources).each(function(key, obj){
+	    if(initial.node == obj.node){
+	      exists = true;
+	    }	    
+	  });
+	  if(!exists){
+	    r_removed.push(initial);
+	  }
+	  
+	  exists = false;
+	  // ioi
 
-            var initial = this.initial_resources;
-            var r_removed  = $.grep(initial,   function (x) { return $.inArray(x, resources) == -1 });
+          my_oTable.fnClearTable();
+          $.each(resources, function(i, r) { 
 
-            my_oTable.fnClearTable();
-            $.each(resources, function(i, r) { 
-                var type = ($.inArray(r, initial) == -1) ? 'add' : 'attached';
-		var time = ($.inArray(r, initial) == -1) ? "00:00" : 'none'; //ioi
-		var node = "none";
-		
-		// ioi: Check if an object is being sent or just a string
-	        if(jQuery.type(r) === "string"){
-	           node = r;
-		   time = "unknown";
-	        }else{
-	 	   node = r.node;
-		   time = r.timeslot;
-	        }
-
-                var SPAN = "<span class='ui-icon ui-icon-close ResourceSelectedClose' id='"+node+"'/>";
-		var slot = "<span id='resource_"+node+"'>" + time.toString() + "</span>"; //ioi
-                var newline=Array();
-                newline.push(type, node, slot, SPAN); // ioi
-		var line = my_oTable.fnAddData(newline);
-                var nTr = my_oTable.fnSettings().aoData[ line[0] ].nTr;
-                nTr.className = type;
+              var type = (r.node != initial.node) ? 'add' : 'attached';
+	      
+	      // Create the resource objects
+	      // ioi: refubrished
+	      var node = r.node;
+	      time = r.timeslot;
+	        	        
+              var SPAN = "<span class='ui-icon ui-icon-close ResourceSelectedClose' id='"+node+"'/>";
+	      var slot = "<span id='resource_"+node+"'>" + time + "</span>"; //ioi
+	      // ioi
+              var newline=Array();
+              newline.push(type, node, slot, SPAN); // ioi
+	      var line = my_oTable.fnAddData(newline);
+              var nTr = my_oTable.fnSettings().aoData[ line[0] ].nTr;
+              nTr.className = type;
             });
             $.each(r_removed, function(i, r) { 
 
-		var time = "unknown"; //ioi
-		var node = "none";
-		
-		// ioi: Check if an object is being sent or just a string
-	        if(jQuery.type(r) === "string"){
-	           node = r;
-		   time = "unknown";
-	        }else{
-	 	   node = r.node;
-		   time = r.timeslot;
-	        }
-
-                var SPAN = "<span class='ui-icon ui-icon-close ResourceSelectedClose' id='"+node+"'/>";
-		var slot = "<span id='resource_"+node+"'>" + time.toString() + "</span>"; // ioi
-                var newline=Array();
-                newline.push('remove', node, slot, SPAN); // ioi
-                var line = my_oTable.fnAddData(newline);
-                var nTr = my_oTable.fnSettings().aoData[ line[0] ].nTr;
-                nTr.className = 'remove';
+	      // The list contains objects
+	      // ioi: refubrished
+	      var node = r.node;
+	      var time = r.timeslot;
+	        
+              var SPAN = "<span class='ui-icon ui-icon-close ResourceSelectedClose' id='"+node+"'/>";
+	      var slot = "<span id='resource_"+node+"'>" + time + "</span>";
+	      // ioi
+              var newline=Array();
+              newline.push('remove', node, slot, SPAN); // ioi
+              var line = my_oTable.fnAddData(newline);
+              var nTr = my_oTable.fnSettings().aoData[ line[0] ].nTr;
+              nTr.className = 'remove';
             });
 
             /* Allow the user to update the slice */
