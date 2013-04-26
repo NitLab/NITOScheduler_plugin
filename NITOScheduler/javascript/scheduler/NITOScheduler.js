@@ -40,254 +40,267 @@ if ( typeof Object.create !== 'function' ) {
 	////////////////////////
 	
 	var Reservation = {
-	    init: function() {
-	        var settings = {
-		        cols: 48,
-		        rowCssPrefix: 'row-',
-		        colCssPrefix: 'col-',
-		        slotWidth: 35,
-		        slottHeight: 35,
-		        slottCss: 'slot',
-		        selectedSlotCss: 'selectedSlot',
-		        selectingSlotCss: 'selectingSlot',
-			subgroup_nodes: [],
-			reserved_nodes: [5, 20, 13, 6],
-			subtestbed_id: "none",
-		        parent: null,
-			resources: []
-		    };
-		 
-	         return settings; 
-           },
-		
-	   // Filter what you need from the testbed nodes
-	   subgroup: function( nodes, settings ){
-		var subgroup_name = settings.subtestbed_id;
-		if(nodes.length > 0){
-		    var sub_nodes = new Array();
-		    for(var i=0; i<nodes.length; i++){
-			if(nodes[i].hardware_type == subgroup_name){
-				sub_nodes.push(nodes[i]);
-			}
-		    }
-		    settings.subgroup_nodes = sub_nodes;
-		
-		}
-	   },
-
-	   // Create the content for the tab
-	   display: function ( settings ) {
-			var self = this;
-			var now = new Date();
-			var str = [], timeNo, className, time_num;
-			
-			// Options passed by the user or default
-			var reservedSlot = settings.reserved_nodes;
-			var numofnodes = settings.subgroup_nodes.length;
-			var my_nodes = settings.subgroup_nodes;
-			var element_id = settings.subtestbed_id;
-
-			for (i = 0; i < numofnodes; i++) {
-			    str.push('<ul class="node"><a title="' + my_nodes[i].component_id + '">' +  my_nodes[i].hostname + '</a>');
-			    k = 0;
-			    for (j = 0; j < settings.cols; j++) {
-			        // Create the time labels
-			        (j % 2) ? k++ : k;
-			        hour = (j - k).toString();
-			        min = (j % 2) ? ":30" : ":00";
-			        min_ah = (j % 2) ? ":00" : ":30";
-			        min_ah == ":30" ? hour_ah = hour : hour_ah = (j - k + 1).toString();
-			        timeNo = hour + min + "-" + hour_ah + min_ah;
-			        // End of time labels
-
-			        // Create the class name : row an column tag
-			        className = settings.slottCss + ' ' + settings.rowCssPrefix + i.toString() + ' ' + settings.colCssPrefix + j.toString();
-			        if ($.isArray(reservedSlot)) {
-			            for (t = 0; t < reservedSlot.length; t++) {
-			                row = Math.round(reservedSlot[t] / settings.cols);
-			                col = reservedSlot[t] % settings.cols - 1;
-			                if (row == i && col == j) {
-			                    className += ' ' + settings.selectedSlotCss;
-			                } //if
-			            } //for
-
-			        } //if
-			        str.push('<li class="' + className + '">' + '<a title="' + timeNo + '">' + timeNo + '</a>' + '</li>');
-			    } //for
-			    str.push('</ul>');
-			} //for
-			$('#place_' + element_id).html(str.join(''));
-
-
-		    // Selecting time slots
-			$('#place_' + element_id + ' .slot').click(function () {
-			    if ($.trim($('#hidden_date').val()) != "") {
-			       if ($(this).hasClass(settings.selectedSlotCss)) {
-			           alert('This slot is already reserved.');
-			       }
-			       else {
-				    var date = $.trim($('#hidden_date').val());
-				    if ($(this).hasClass(settings.selectingSlotCss)) {
-					// Remove table entry
-					$(this).removeClass(settings.selectingSlotCss);
-					    
-					var time_slot = $(this).children('a').attr('title');
-					var node = $(this).closest('.node').children(':first').attr('title');
-					    
-					var entry = {node:'none',timeslot:0};
-					var gentry = {node:'none', timeslot:0, date:'none'};
-
-
-					entry.node = node
-					entry.timeslot = time_slot + "+" + date;
-
-					gentry.node = node;
-					gentry.timeslot = time_slot;
-					gentry.date = date;
-
-					// Remove the selected item from the resources selected
-					// Use combination of grep and map
-					//tmp = $.grep(settings.parent.current_resources, function(x) { return x.node != entry.node || x.timeslot != entry.timeslot; });
-					
-					tmp = $.grep(settings.resources, function(x) { return x.node != entry.node || x.timeslot != entry.timeslot; });
-
-					tmp_ = $.map(tmp, function(x) { return { node : x.node, timeslot : x.timeslot }; });
-
-					// Remove items from global list
-					tmpg = $.grep(jQuery.fn.ResourcesArray, function(x) { return x.node != gentry.node || x.timeslot != gentry.timeslot || x.date != gentry.date; });
-
-					tmp_g = $.map(tmpg, function(x) { return { node : x.node, timeslot : x.timeslot, date: x.date }; });
-
-					// List of objects after removing the data that i do not want
-					jQuery.fn.ResourcesArray = tmp_g;
-					settings.resources = tmp_;
-		    			//settings.parent.current_resources = tmp_;
-					 
-					/* inform slice that our selected resources have changed */
-					$.publish('/update-set/' + settings.parent.options.query_uuid, [settings.resources, true]);
-
-				     } else {
-					 // Add table entry
-					 $(this).addClass(settings.selectingSlotCss);
-
-					 var time_slot = $(this).children('a').attr('title');
-					 var node = $(this).closest('.node').children(':first').attr('title');
-					    
-					 var entry = {node:'none',timeslot:0};
-					 var gentry = {node:'none', timeslot:0, date:'none'};
-
-					 entry.node = node
-					 entry.timeslot = time_slot + "+" + date;
-					    
-					 gentry.node = node;
-					 gentry.timeslot = time_slot;
-					 gentry.date = date;
-					 
-					 // modify the plugins array, used several dates memory
-					 jQuery.fn.ResourcesArray.push(gentry);
-					 //settings.parent.current_resources.push(entry);
-					 // modify the shared resources array
-					 settings.resources.push(entry);
-					 
-					 /* inform slice that our selected resources have changed */
-					 $.publish('/update-set/' + settings.parent.options.query_uuid, [settings.resources, true]);
-
-				     }// else
-				 } // if: Reserved slot
-			    }else{
-			       alert("Pick a date.");
-	                    }// if: date
-			}); //click
-
-		    // Reserve the blue slots
-			$('#reserveBtn_' + element_id).click(function () {
-			    var node_time = [];
-			    var i = 0;
-
-			    if ($.trim($('#hidden_date').val()) != "") {
-			        var selections = []; // Create an object
-			        $('#place_' + element_id + ' .slot').each(function () {
-			            if ($(this).hasClass(settings.selectingSlotCss)) {
-			                // Push the data to the server
-			                var data = $('#hidden_date').val() + ">";
-			                data += $(this).children('a').attr('title');
-			                var node = $(this).closest('.node').children(':first').attr('title');
-
-			                selections.push(node + ">" + data);
-			                i++;
-			            }
-			        });
-
-			        if (selections.length > 0) {
-
-			            // Send data to server
-			            var request = $.ajax({
-			                url: "http://nitlab.inf.uth.gr/crash_report.php",
-			                type: "POST",
-			                data: { array: JSON.stringify(selections) },
-
-			                success: function (response) {
-			                    alert("Submitted successfully.\n" + response);
-			                    $('#place_' + element_id + ' .slot').each(function () {
-			                        if ($(this).hasClass(settings.selectingSlotCss)) {
-			                            $(this).removeClass(settings.selectingSlotCss);
-			                            $(this).addClass(settings.selectedSlotCss);
-			                        }
-			                    });
-			                },
-			                error: function (jqXHR, exception) {
-			                    /*
-                                    Status zero happens when 
+	  
+	    
+		////////////
+		// PUBLIC //
+		////////////
+		init: function() {
+		    var settings = {
+			    cols: 48,
+			    rowCssPrefix: 'row-',
+			    colCssPrefix: 'col-',
+			    slotWidth: 35,
+			    slottHeight: 35,
+			    slottCss: 'slot',
+			    selectedSlotCss: 'selectedSlot',
+			    selectingSlotCss: 'selectingSlot',
+			    subgroup_nodes: [],
+			    reserved_nodes: [5, 20, 13, 6],
+			    subtestbed_id: "none",
+			    parent: null,
+			    resources: []
+			};
+		    
+		    return settings; 
+	      },
     
-                                    1) Page is being served from file protocol 
-                                    2) Page exits/refreshes as an active XMLHttpRequest 
-                                       is still being processed. It throws an "INVALID_STATE_ERR " 
-                                       error and sets the status to zero.
-                                    3) The response of the server was empty
-                                */
-			                    if (jqXHR.status === 0) {
-			                        alert('Not connected.\nVerify Network.');
-			                    } else if (jqXHR.status == 404) {
-			                        alert('Requested page not found. [404]');
-			                    } else if (jqXHR.status == 500) {
-			                        alert('Internal Server Error [500].');
-			                    } else if (exception === 'parsererror') {
-			                        alert('Requested parse failed.');
-			                    } else if (exception === 'timeout') {
-			                        alert('Time out error.');
-			                    } else if (exception === 'abort') {
-			                        alert('Ajax request aborted.');
-			                    } else {
-			                        alert('Uncaught Error.\n' + jqXHR.responseText);
-			                    }
-
-			                    // Trigger Clear button
-			                    $('#clearBtn_' + element_id).trigger('click');
-			                }//error
-			            });
-
-			        }
-			        // Clear data
-			        selections = null;
-			        i = 0;
-
-			    } else {
-			        alert('Pick a date!');
+	      
+	      // Filter what you need from the testbed nodes
+	      subgroup: function( nodes, settings ){
+		    var subgroup_name = settings.subtestbed_id;
+		    if(nodes.length > 0){
+			var sub_nodes = new Array();
+			for(var i=0; i<nodes.length; i++){
+			    if(nodes[i].hardware_type == subgroup_name){
+				    sub_nodes.push(nodes[i]);
 			    }
+			}
+			settings.subgroup_nodes = sub_nodes;
+		    
+		    }
+	      },
+
+	      // Create the content for the tab
+	      display: function ( settings ) {
+			    var self = this;
+			    var now = new Date();
+			    var str = [], timeNo, className, time_num;
+			    
+			    // Options passed by the user or default
+			    var reservedSlot = settings.reserved_nodes;
+			    var numofnodes = settings.subgroup_nodes.length;
+			    var my_nodes = settings.subgroup_nodes;
+			    var element_id = settings.subtestbed_id;
+
+			    for (i = 0; i < numofnodes; i++) {
+				str.push('<ul class="node"><a title="' + my_nodes[i].component_id + '">' +  my_nodes[i].hostname + '</a>');
+				k = 0;
+				for (j = 0; j < settings.cols; j++) {
+				    // Create the time labels
+				    (j % 2) ? k++ : k;
+				    hour = (j - k).toString();
+				    min = (j % 2) ? ":30" : ":00";
+				    min_ah = (j % 2) ? ":00" : ":30";
+				    min_ah == ":30" ? hour_ah = hour : hour_ah = (j - k + 1).toString();
+				    timeNo = hour + min + "-" + hour_ah + min_ah;
+				    // End of time labels
+
+				    // Create the class name : row an column tag
+				    className = settings.slottCss + ' ' + settings.rowCssPrefix + i.toString() + ' ' + settings.colCssPrefix + j.toString();
+				    if ($.isArray(reservedSlot)) {
+					for (t = 0; t < reservedSlot.length; t++) {
+					    row = Math.round(reservedSlot[t] / settings.cols);
+					    col = reservedSlot[t] % settings.cols - 1;
+					    if (row == i && col == j) {
+						className += ' ' + settings.selectedSlotCss;
+					    } //if
+					} //for
+
+				    } //if
+				    str.push('<li class="' + className + '">' + '<a title="' + timeNo + '">' + timeNo + '</a>' + '</li>');
+				} //for
+				str.push('</ul>');
+			    } //for
+			    $('#place_' + element_id).html(str.join(''));
 
 
-			}); //click
+			// Selecting time slots
+			    $('#place_' + element_id + ' .slot').click(function () {
+				if ($.trim($('#hidden_date').val()) != "") {
+				  if ($(this).hasClass(settings.selectedSlotCss)) {
+				      alert('This slot is already reserved.');
+				  }
+				  else {
+					var date = $.trim($('#hidden_date').val());
+					if ($(this).hasClass(settings.selectingSlotCss)) {
+					    // Remove table entry
+					    $(this).removeClass(settings.selectingSlotCss);
+					    private.rmDataListPlug(this);					    
 
-			$('#clearBtn_' + element_id).click(function () {
-			    $('#place_' + element_id + ' .slot').each(function () {
-			        if ($(this).hasClass(settings.selectingSlotCss)) {
-			            $(this).removeClass(settings.selectingSlotCss);
-			        }
-			    });
-			}); //click
-			
-		}
+					} else {
+					    // Add table entry
+					    $(this).addClass(settings.selectingSlotCss);
 
+					    var time_slot = $(this).children('a').attr('title');
+					    var node = $(this).closest('.node').children(':first').attr('title');
+						
+					    var entry = {node:'none',timeslot:0};
+					    var gentry = {node:'none', timeslot:0, date:'none'};
+
+					    entry.node = node
+					    entry.timeslot = time_slot + "+" + date;
+						
+					    gentry.node = node;
+					    gentry.timeslot = time_slot;
+					    gentry.date = date;
+					    
+					    // modify the plugins array, used several dates memory
+					    jQuery.fn.ResourcesArray.push(gentry);
+					    // modify the shared resources array
+					    settings.resources.push(entry);
+					    
+					    /* inform slice that our selected resources have changed */
+					    $.publish('/update-set/' + settings.parent.options.query_uuid, [settings.resources, true]);
+
+					}// else
+				    } // if: Reserved slot
+				}else{
+				  alert("Pick a date.");
+				}// if: date
+			    }); //click
+
+			// Reserve the blue slots
+			    $('#reserveBtn_' + element_id).click(function () {
+				var node_time = [];
+				var i = 0;
+
+				if ($.trim($('#hidden_date').val()) != "") {
+				    var selections = []; // Create an object
+				    $('#place_' + element_id + ' .slot').each(function () {
+					if ($(this).hasClass(settings.selectingSlotCss)) {
+					    // Push the data to the server
+					    var data = $('#hidden_date').val() + ">";
+					    data += $(this).children('a').attr('title');
+					    var node = $(this).closest('.node').children(':first').attr('title');
+
+					    selections.push(node + ">" + data);
+					    i++;
+					}
+				    });
+
+				    if (selections.length > 0) {
+
+					// Send data to server
+					var request = $.ajax({
+					    url: "http://nitlab.inf.uth.gr/crash_report.php",
+					    type: "POST",
+					    data: { array: JSON.stringify(selections) },
+
+					    success: function (response) {
+						alert("Submitted successfully.\n" + response);
+						$('#place_' + element_id + ' .slot').each(function () {
+						    if ($(this).hasClass(settings.selectingSlotCss)) {
+							$(this).removeClass(settings.selectingSlotCss);
+							$(this).addClass(settings.selectedSlotCss);
+						    }
+						});
+					    },
+					    error: function (jqXHR, exception) {
+						/*
+					Status zero happens when 
+	
+					1) Page is being served from file protocol 
+					2) Page exits/refreshes as an active XMLHttpRequest 
+					  is still being processed. It throws an "INVALID_STATE_ERR " 
+					  error and sets the status to zero.
+					3) The response of the server was empty
+				    */
+						if (jqXHR.status === 0) {
+						    alert('Not connected.\nVerify Network.');
+						} else if (jqXHR.status == 404) {
+						    alert('Requested page not found. [404]');
+						} else if (jqXHR.status == 500) {
+						    alert('Internal Server Error [500].');
+						} else if (exception === 'parsererror') {
+						    alert('Requested parse failed.');
+						} else if (exception === 'timeout') {
+						    alert('Time out error.');
+						} else if (exception === 'abort') {
+						    alert('Ajax request aborted.');
+						} else {
+						    alert('Uncaught Error.\n' + jqXHR.responseText);
+						}
+
+						// Trigger Clear button
+						$('#clearBtn_' + element_id).trigger('click');
+					    }//error
+					});
+
+				    }
+				    // Clear data
+				    selections = null;
+				    i = 0;
+
+				} else {
+				    alert('Pick a date!');
+				}
+
+
+			    }); //click
+
+			    $('#clearBtn_' + element_id).click(function () {
+				$('#place_' + element_id + ' .slot').each(function () {
+				    if ($(this).hasClass(settings.selectingSlotCss)) {
+					$(this).removeClass(settings.selectingSlotCss);
+					private.rmDataListPlug(this);
+				    }
+				});
+			    }); //click
+			    
+			    // Class tha holds private inner sfunctions
+			    var private = {
+			      rmDataListPlug: function(element){
+				  var date = $.trim($('#hidden_date').val());
+				  // Remove items
+				  var time_slot = $(element).children('a').attr('title');
+				  var node = $(element).closest('.node').children(':first').attr('title');
+							  
+				  var entry = {node:'none',timeslot:0};
+				  var gentry = {node:'none', timeslot:0, date:'none'};
+
+
+				  entry.node = node
+				  entry.timeslot = time_slot + "+" + date;
+
+				  gentry.node = node;
+				  gentry.timeslot = time_slot;
+				  gentry.date = date;
+
+				  // Remove the selected item from the resources selected
+				  // Use combination of grep and map
+				  //tmp = $.grep(settings.parent.current_resources, function(x) { return x.node != entry.node || x.timeslot != entry.timeslot; });
+							      
+				  tmp = $.grep(settings.resources, function(x) { return x.node != entry.node || x.timeslot != entry.timeslot; });
+
+				  tmp_ = $.map(tmp, function(x) { return { node : x.node, timeslot : x.timeslot }; });
+
+				  // Remove items from global list
+				  tmpg = $.grep(jQuery.fn.ResourcesArray, function(x) { return x.node != gentry.node || x.timeslot != gentry.timeslot || x.date != gentry.date; });
+
+				  tmp_g = $.map(tmpg, function(x) { return { node : x.node, timeslot : x.timeslot, date: x.date }; });
+
+				  // List of objects after removing the data that i do not want
+				  jQuery.fn.ResourcesArray = tmp_g;
+				  settings.resources = tmp_;
+							      
+				  /* inform slice that our selected resources have changed */
+				  $.publish('/update-set/' + settings.parent.options.query_uuid, [settings.resources, true]);
+
+			      } 
+			}; // private
+			    
+	       } // display
 		
 	};
 

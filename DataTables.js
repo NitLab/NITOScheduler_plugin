@@ -367,6 +367,9 @@
 			// ioi: the following line adds the first object to the Modifications datatable.
 			// Changed the input element from string to object
                         object.current_resources.push({node:obj['urn'], timeslot:0}); 
+			/* inform slice that our selected resources have changed */
+			// ioi: publish the first entry in order to share it with the other plugins
+			$.publish('/update-set/' + object.options.query_uuid, [object.current_resources, true]); 
                     }
                     // Use a key instead of hostname (hard coded...)
                     newline.push(object.checkbox(o.plugin_uuid, obj['urn'], obj['type'], checked, false));
@@ -496,7 +499,6 @@
 	    object.current_resources = tmp_; 
 	    // ioi
         }
-
         /* inform slice that our selected resources have changed */
         $.publish('/update-set/' + object.options.query_uuid, [object.current_resources, true]); // ioi
 

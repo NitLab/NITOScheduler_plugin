@@ -142,6 +142,7 @@
 	    $.each(slivers, function(i, x) { sliver_urns.push({node:x.urn, timeslot:"0"}); }); // ioi
 
             this.initial_resources = sliver_urns[0]; // We make a copy of the object // ioi
+            resources.push(this.initial_resources);
 	    // ioi
 	    
             if (this.current_resources == null) {
@@ -179,9 +180,15 @@
              */
           if (!change)
               return;
-
+	  
+	  console.log(resources);
+	  
 	  // ioi: Refubrished
           var initial = this.initial_resources;
+	  // When the cloud is load this valued should be null
+	  if(initial ==  null)
+	    return;
+	  
           var r_removed  = []; //$.grep(initial,   function (x) { return $.inArray(x.node, resources.node) == -1 });
 	  exists = false; // ioi
 	  $(resources).each(function(key, obj){
@@ -189,10 +196,10 @@
 	      exists = true;
 	    }	    
 	  });
-	  if(!exists){
+	  if(exists == false){
 	    r_removed.push(initial);
 	  }
-	  
+	  console.log(r_removed);
 	  exists = false;
 	  // ioi
 
@@ -215,7 +222,7 @@
               var nTr = my_oTable.fnSettings().aoData[ line[0] ].nTr;
               nTr.className = type;
             });
-            $.each(r_removed, function(i, r) { 
+          $.each(r_removed, function(i, r) { 
 
 	      // The list contains objects
 	      // ioi: refubrished

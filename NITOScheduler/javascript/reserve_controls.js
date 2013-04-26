@@ -43,15 +43,26 @@ jQuery.noConflict();
 		   return;
 
 		// Each time you choose a date clear all the chosen slots
-		// TODO:put your plugin tabs in here, like in the example
-		jQuery("#clearBtn_commel").trigger('click');
-		jQuery("#clearBtn_orbit").trigger('click');
-		jQuery("#clearBtn_diskless").trigger('click');
-
+		// TODO:put/replace with your plugin tabs in here, like in the example		
+		jQuery("#place_commel .slot").each(function(){
+		  if(jQuery(this).hasClass("selectingSlot")){
+		    jQuery(this).removeClass("selectingSlot");
+		  }
+		});
+		
+		jQuery("#place_grid .slot").each(function(){
+		  if(jQuery(this).hasClass("selectingSlot")){
+		    jQuery(this).removeClass("selectingSlot");
+		  }
+		});
+		
+		jQuery("#place_diskless .slot").each(function(){
+		  if(jQuery(this).hasClass("selectingSlot")){
+		    jQuery(this).removeClass("selectingSlot");
+		  }
+		});
 		
 		var resource_list = new Array();
-
-	console.log(jQuery.fn.ResourcesArray);
 
 		//////////////////////////////////////////////////////////////
 		//  Find if i already have selected resources for this day  //
