@@ -22,7 +22,7 @@
 #
 #
 # This is a MySlice plugin for the NITOS Scheduler
-# NITOScheduler v0.8
+# NITOScheduler v0.9
 #
 */
 jQuery.noConflict();

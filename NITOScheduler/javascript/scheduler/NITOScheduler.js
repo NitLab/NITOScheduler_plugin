@@ -20,7 +20,7 @@
 #
 #
 # This is a MySlice plugin for the NITOS Scheduler
-# NITOScheduler v0.8
+# NITOScheduler v0.9
 #
 */
 
@@ -170,7 +170,8 @@ if ( typeof Object.create !== 'function' ) {
 				}// if: date
 			    }); //click
 
-			// Reserve the blue slots
+			// Reserve the blue slots - Reserve Button
+				/*
 			    $('#reserveBtn_' + element_id).click(function () {
 				var node_time = [];
 				var i = 0;
@@ -207,6 +208,7 @@ if ( typeof Object.create !== 'function' ) {
 						});
 					    },
 					    error: function (jqXHR, exception) {
+					*/
 						/*
 					Status zero happens when 
 	
@@ -216,6 +218,7 @@ if ( typeof Object.create !== 'function' ) {
 					  error and sets the status to zero.
 					3) The response of the server was empty
 				    */
+					/*
 						if (jqXHR.status === 0) {
 						    alert('Not connected.\nVerify Network.');
 						} else if (jqXHR.status == 404) {
@@ -248,7 +251,7 @@ if ( typeof Object.create !== 'function' ) {
 
 
 			    }); //click
-
+				*/
 			    $('#clearBtn_' + element_id).click(function () {
 				$('#place_' + element_id + ' .slot').each(function () {
 				    if ($(this).hasClass(settings.selectingSlotCss)) {
@@ -329,7 +332,7 @@ if ( typeof Object.create !== 'function' ) {
 	// Reservation object initialize					
 	var reservation_settings = reserve.init();
 	reservation_settings.parent = object;
-
+        $('#' + options.plugin_uuid).spin()
 
         /* methods */
 	this.get_leases = function(rows, options){
@@ -385,7 +388,7 @@ if ( typeof Object.create !== 'function' ) {
 	// Each time a new update publish event is called this function is excecuted
 	// Take the updated resource list and put a reference to the settings
 	this.update_resources = function(resources, instances){
-	    
+
 	  var pre_resources = reservation_settings.resources;
 	  reservation_settings.resources = resources;
 	};
@@ -402,6 +405,7 @@ if ( typeof Object.create !== 'function' ) {
 				nodes.push(rows[i]);
 			}
 		}
+		$('#' + options.plugin_uuid).spin(false)
 
 		// TODO: Replace the tabs with your own
 		// set the nodes id ( the name should be the same as in the  )

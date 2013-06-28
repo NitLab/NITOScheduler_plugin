@@ -23,7 +23,7 @@
 #
 #
 # This is a MySlice plugin for the NITOS Scheduler
-# NITOScheduler v0.8
+# NITOScheduler v0.95
 #
 
 class NITOSchedulerClass extends Plugin
@@ -52,7 +52,7 @@ class NITOSchedulerClass extends Plugin
     </script>
      <div id="nitos_scheduler">
         <div id="image">
-            <h2 style="font-family:Book Antiqua; color:Blue;">Topology</h2>
+            <h2 style="font-family:Book Antiqua; color:Blue; text-align:center">Topology</h2>
             <img src="/components/com_tophat/includes/plugins/NITOScheduler/icons/nitos_topo.png" alt="nitos topology" />
         </div>
 	<br>
@@ -68,7 +68,7 @@ class NITOSchedulerClass extends Plugin
                 <h2>Grid</h2>
                 <div  id="place_commel"></div>  
                 <div id="buttons_div_commel">
-                    <input type="button" id="reserveBtn_commel" value="Reserve" />
+                    <!--<input type="button" id="reserveBtn_commel" value="Reserve" />-->
                     <input type="button" id="clearBtn_commel" value="Clear" /> 
                     <ul id="seatDescription_commel">
                         <li style="background:url('/components/com_tophat/includes/plugins/NITOScheduler/icons/circle_grey.png') no-repeat scroll 0 0 transparent; background-position:bottom;">Available</li>
@@ -81,7 +81,7 @@ class NITOSchedulerClass extends Plugin
                 <h2>Orbit</h2>
                 <div  id="place_orbit"></div>  
                 <div id="buttons_div_orbit">
-                    <input type="button" id="reserveBtn_orbit" value="Reserve"/>
+                    <!--<input type="button" id="reserveBtn_orbit" value="Reserve"/>-->
                     <input type="button" id="clearBtn_orbit" value="Clear"/>  
                     <ul id="seatDescription_orbit">
                         <li style="background:url('/components/com_tophat/includes/plugins/NITOScheduler/icons/circle_grey.png') no-repeat scroll 0 0 transparent; background-position:bottom;">Available</li>
@@ -94,7 +94,7 @@ class NITOSchedulerClass extends Plugin
                 <h2>Diskless</h2>
                 <div  id="place_diskless"></div>  
                 <div id="buttons_div_diskless">
-                    <input type="button" id="reserveBtn_diskless" value="Reserve"/>
+                    <!--<input type="button" id="reserveBtn_diskless" value="Reserve"/>-->
                     <input type="button" id="clearBtn_diskless" value="Clear"/> 
                     <ul id="seatDescription_diskless">
                         <li style="background:url('/components/com_tophat/includes/plugins/NITOScheduler/icons/circle_grey.png') no-repeat scroll 0 0 transparent; background-position:bottom;">Available</li>
